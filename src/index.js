@@ -2,9 +2,7 @@ const jwt = require('jsonwebtoken')
 const TOKEN_EXPIRATION_MINTUES = 60
 
 /**
- * Generate authentication functions to secure a provider's routes. Decorate a provider's model
- * with the "authenticate" and "authenticationSpecification" functions and return a "validateToken"
- * middleware function that can be applied to the provider's namespaced routes
+ * Generate authentication functions and decorate a provider's model with them
  * @param {object}   provider - provider that is getting secured
  * @param {string}   secret - secret for generating tokens
  * @param {function} validateCredentials - async function by which username and password are authenticated
@@ -52,19 +50,18 @@ function getAuthenticate (validateCredentials, providerNamespace, secret, tokenE
       // Validate user's credentials
       validateCredentials(username, password)
         .then(valid => {
-          // If credentials were not valid, send the error message (AGOL spec)
-          if (valid) {
-            // Create access token
-            let expires = Date.now() + (tokenExpirationMinutes * 60 * 1000)
-            let json = {
-              token: jwt.sign({exp: Math.floor(expires / 1000), iss: providerNamespace, sub: username}, secret),
-              expires
-            }
-            resolve(json)
+          // If credentials were not valid, reject
+          if (!valid) {
+            let err = new Error('Invalid credentials.')
+            err.code = 401
+            reject(err)// Create access token
           }
-          let err = new Error('Invalid credentials.')
-          err.code = 401
-          reject(err)
+          let expires = Date.now() + (tokenExpirationMinutes * 60 * 1000)
+          let json = {
+            token: jwt.sign({exp: Math.floor(expires / 1000), iss: providerNamespace, sub: username}, secret),
+            expires
+          }
+          resolve(json)
         })
         .catch(err => {
           reject(err)
@@ -74,7 +71,7 @@ function getAuthenticate (validateCredentials, providerNamespace, secret, tokenE
 }
 
 /**
- * Parameterize a "validateToken" function for use as provider middleware
+ * Parameterize a "validateToken" function
  * @param {string} secret
  */
 function getValidateToken (secret) {
@@ -83,7 +80,7 @@ function getValidateToken (secret) {
     return new Promise((resolve, reject) => {
       // Verify token with async decoded function
       jwt.verify(token, secret, function (err, decoded) {
-        // If token invalid, send response now
+        // If token invalid, reject
         if (err) {
           err.code = 401
           reject(err)
