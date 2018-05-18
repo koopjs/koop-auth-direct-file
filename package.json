@@ -14,6 +14,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "buble": "^0.19.3",
+    "proxyquire": "^2.0.1",
     "standard": "^11.0.1",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.3"
@@ -21,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/koopjs/koop-auth-direct/issues"
   },
-  "homepage": "https://github.com/koopjs/koop-auth-direct#readme"
+  "homepage": "https://github.com/koopjs/koop-auth-direct#readme",
+  "dependencies": {
+    "jsonwebtoken": "^8.2.1"
+  }
 }
