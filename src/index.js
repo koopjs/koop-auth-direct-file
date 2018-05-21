@@ -21,8 +21,8 @@ function auth (provider, secret, validateCredentials, options = {}) {
   // Get "authenticate" function with parameterization for this specific auth application
   provider.Model.prototype.authenticate = getAuthenticate(validateCredentials, provider.name, secret, tokenExpirationMinutes)
 
-  // Get and return "validateToken" function with parameterization for this specific auth application
-  provider.Model.prototype.validateToken = getValidateToken(secret)
+  // Get "authorized" function with parameterization for this specific auth application
+  provider.Model.prototype.authorize = getAuthorize(secret)
 }
 
 /**
@@ -74,9 +74,9 @@ function getAuthenticate (validateCredentials, providerNamespace, secret, tokenE
  * Parameterize a "validateToken" function
  * @param {string} secret
  */
-function getValidateToken (secret) {
+function getAuthorize (secret) {
   // Define validation function
-  return function validateToken (token) {
+  return function authorize (token) {
     return new Promise((resolve, reject) => {
       // Verify token with async decoded function
       jwt.verify(token, secret, function (err, decoded) {

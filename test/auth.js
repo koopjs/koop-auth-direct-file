@@ -12,29 +12,29 @@ const userStore = [{ 'username': 'jerry', 'password': 'garcia' }]
 const validateCredentials = proxyquire('./fixtures/identity-management', {'./user-store': userStore})
 auth(providerMock, secret, validateCredentials)
 
-test('validateToken success', async function (t) {
+test('authorize success', async function (t) {
   t.plan(1)
   // Mock token
   const token = jwt.sign({exp: Math.floor(Date.now() / 1000) + 120, iss: providerMock.name, sub: 'username'}, secret)
-  let decoded = await providerMock.Model.prototype.validateToken(token)
+  let decoded = await providerMock.Model.prototype.authorize(token)
   t.equals(decoded.iss, providerMock.name)
 })
 
-test('validateToken failure - no token', async function (t) {
+test('authorize failure - no token', async function (t) {
   t.plan(1)
   try {
-    await providerMock.Model.prototype.validateToken(undefined)
+    await providerMock.Model.prototype.authorize(undefined)
   } catch (err) {
     t.equals(err.code, 401)
   }
 })
 
-test('validateToken failure - expired token', async function (t) {
+test('authorize failure - expired token', async function (t) {
   t.plan(1)
   // Mock token
   const token = jwt.sign({exp: Math.floor(Date.now() / 1000) - 120, iss: providerMock.name, sub: 'username'}, secret)
   try {
-    await providerMock.Model.prototype.validateToken(token)
+    await providerMock.Model.prototype.authorize(token)
   } catch (err) {
     t.equals(err.code, 401)
   }
