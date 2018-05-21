@@ -1,8 +1,6 @@
 # Koop-Direct-Auth
 ## A module for implementing direct authentication from client to Koop server
 
-This sample provider demonstrates the implementation of token-based security on services. The provider itself simply serves static GeoJSON files as Koop output-services. A more complete description of Koop and Koop providers is available at [koopjs.github.io](http://koopjs.github.io/).
-
 ## Authentication pattern
 
 The authentication module implemented here uses a *direct authentication* pattern; it receives user credentials (username/password) from a client and authenticates those credentials against an identity/user-store. Requests with valid credentials are issued an access-token (a string of encoded-data); The access token is encoded with the use of a secret known only to the Koop server. The access-token expires and becomes invalid after a certain period (default of 60 minutes).
