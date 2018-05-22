@@ -1,11 +1,12 @@
 const test = require('tape')
+const path = require('path')
 const jwt = require('jsonwebtoken')
 const providerMock = {
   name: 'test-provider',
   Model: function () {}
 }
 const secret = 'secret'
-const auth = require('../src')(secret)
+const auth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'))
 
 test('authorize success', async function (t) {
   t.plan(1)
@@ -63,6 +64,6 @@ test('authenticationSpecifiction', t => {
 test('tokenExpirationMinutes - invalid setting', t => {
   t.plan(1)
   t.throws(function () {
-    require('../src')(secret, {tokenExpirationMinutes: -1})
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {tokenExpirationMinutes: -1})
   }, /"tokenExpirationMinutes" must be an integer >= 5/)
 })

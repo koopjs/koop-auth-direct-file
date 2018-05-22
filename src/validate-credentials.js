@@ -1,15 +1,15 @@
 const fs = require('fs')
-const userStoreFilePath = process.env.USER_STORE
 
 /**
  * Validate username and password.
  * @param {string} username
  * @param {string} password
+ * @param {string} userStoreFilePath path to user-store file
  * @returns {Promise}
  */
-function validateFileBasedCredentials (username, password) {
+function validateFileBasedCredentials (username, password, userStoreFilePath) {
   const promise = new Promise((resolve, reject) => {
-    fs.readFile(`${__dirname}/../${userStoreFilePath}`, function (err, dataBuffer) {
+    fs.readFile(userStoreFilePath, function (err, dataBuffer) {
       if (err) return reject(err)
 
       let userStore = JSON.parse(dataBuffer.toString())

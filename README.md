@@ -13,9 +13,9 @@ The issued access-token should be attached to all subsequent service requests by
 
 ## Example of Koop authentication implementation
 
-The [server.js](./server.js) file provides an example of securing a provider's resources. Start by requiring the provider and the authentication module.
+The [server.js](./server.js) file provides an example of securing a provider's resources. Start by requiring the authentication module. Pass it a secret and the file path of your user-store.
 
-    let auth = require('./koop-auth-direct/src')('pass-in-your-secret')
+    let auth = require('./koop-auth-direct/src')('pass-in-your-secret', `${__dirname}/user-store.json`)
     koop.register(auth)
 
 Then require and register your providers.  
@@ -35,5 +35,6 @@ Finally, create a JSON file store.  This should be an array of objects with prop
 | Param | Type | Description |
 | --- | --- | --- |
 | secret | <code>string</code> | secret for encoding/decoding tokens |
+| userStoreFilePath | <code>string</code> | path to the JSON file containing the array of username/password objects |
 | options | <code>object</code> | options object |
 | options.tokenExpirationMinutes | <code>integer</code> | minutes until token expires (default 60) |
