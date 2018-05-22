@@ -4,7 +4,7 @@
   "description": "Module for implementing a direct authentication pattern with Koop",
   "main": "dist/index.js",
   "scripts": {
-    "test": "standard && tape test/*.js | tap-spec"
+    "test": "standard && USER_STORE=./test/fixtures/user-store.json tape test/*.js | tap-spec"
   },
   "repository": {
     "type": "git",
