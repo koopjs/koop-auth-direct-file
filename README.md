@@ -38,3 +38,4 @@ Finally, create a JSON file store.  This should be an array of objects with prop
 | userStoreFilePath | <code>string</code> | path to the JSON file containing the array of username/password objects |
 | options | <code>object</code> | options object |
 | options.tokenExpirationMinutes | <code>integer</code> | minutes until token expires (default 60) |
+| options.authSpecOptions | <code>object</code> | additional key-value data to be return in result of authenticationSpecification function |

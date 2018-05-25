@@ -2,9 +2,8 @@ const fs = require('fs')
 const jwt = require('jsonwebtoken')
 const validateCredentials = require('./validate-credentials')
 const TOKEN_EXPIRATION_MINUTES = 60
-const SSL = true
+let _authSpecOptions
 let _tokenExpirationMinutes
-let _ssl
 let _secret
 let _userStoreFilePath
 
@@ -14,7 +13,7 @@ let _userStoreFilePath
  * @param {string}   userStoreFilePath - file path of user store JSON file
  * @param {object}   options
  * @param {integer}  options.tokenExpirationMinutes - number of minutes until token expires
- * @param {boolean}  options.ssl - use https as protocol for authentication
+ * @param {boolean}  options.authSpecOptions - additional options to be passed back in result of authenticationSpecification()
  */
 function auth (secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
@@ -24,14 +23,16 @@ function auth (secret, userStoreFilePath, options = {}) {
 
   _secret = secret
   _userStoreFilePath = userStoreFilePath
+  if (options.authSpecOptions) {
+    if (options.authSpecOptions.hasOwnProperty('provider')) throw new Error(`"provider" not allow as an authSpecOption key`)
+    if (options.authSpecOptions.hasOwnProperty('secured')) throw new Error(`"secured" not allow as an authSpecOption key`)
+  }
+  _authSpecOptions = options.authSpecOptions || {}
 
   //  Ensure token expiration is an integer greater than 5
   if (options.tokenExpirationMinutes && (!Number.isInteger(options.tokenExpirationMinutes) || options.tokenExpirationMinutes < 5)) throw new Error(`"tokenExpirationMinutes" must be an integer >= 5`)
-  //  Ensure ssl option was a boolean
-  if (options.ssl && typeof options.ssl !== 'boolean') throw new Error(`"ssl" option must be a boolean`)
 
   _tokenExpirationMinutes = options.tokenExpirationMinutes || TOKEN_EXPIRATION_MINUTES
-  _ssl = (options.ssl === false) ? false : SSL
 
   return {
     type: 'auth',
@@ -47,11 +48,10 @@ function auth (secret, userStoreFilePath, options = {}) {
  */
 function getAuthenticationSpecification (providerNamespace) {
   return function authenticationSpecification () {
-    return {
+    return Object.assign(_authSpecOptions, {
       provider: providerNamespace,
-      secured: true,
-      ssl: _ssl
-    }
+      secured: true
+    })
   }
 }
 

@@ -54,17 +54,16 @@ test('authenticate failure', async function (t) {
 })
 
 test('authenticationSpecifiction', t => {
-  t.plan(3)
+  t.plan(2)
   let authenticationSpecification = auth.getAuthenticationSpecification(providerMock.name)
   let result = authenticationSpecification()
   t.equals(result.secured, true)
   t.equals(result.provider, providerMock.name)
-  t.equals(result.ssl, true)
 })
 
-test('ssl - option setting', t => {
+test('authSpecOptions', t => {
   t.plan(3)
-  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {ssl: false})
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {ssl: false}})
   let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
   let result = authenticationSpecification()
   t.equals(result.secured, true)
@@ -72,16 +71,23 @@ test('ssl - option setting', t => {
   t.equals(result.ssl, false)
 })
 
-test('ssl - invalid setting', t => {
-  t.plan(1)
-  t.throws(function () {
-    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {ssl: 'false'})
-  }, /"ssl" option must be a boolean/)
-})
-
-test('tokenExpirationMinutes - invalid setting', t => {
+test('tokenExpirationMinutes - invalid "tokenExpirationMinutes" setting', t => {
   t.plan(1)
   t.throws(function () {
     require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {tokenExpirationMinutes: -1})
   }, /"tokenExpirationMinutes" must be an integer >= 5/)
+})
+
+test('tokenExpirationMinutes - invalid "authSpecOptions.provider" setting', t => {
+  t.plan(1)
+  t.throws(function () {
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {provider: 'test'}})
+  }, /"provider" not allow as an authSpecOption key/)
+})
+
+test('tokenExpirationMinutes - invalid "authSpecOptions.secured" setting', t => {
+  t.plan(1)
+  t.throws(function () {
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {secured: 'test'}})
+  }, /"secured" not allow as an authSpecOption key/)
 })
