@@ -15,7 +15,7 @@ The issued access-token should be attached to all subsequent service requests by
 
 The [server.js](./server.js) file provides an example of securing a provider's resources. Start by requiring the authentication module. Pass it a secret and the file path of your user-store.
 
-    let auth = require('./koop-auth-direct/src')('pass-in-your-secret', `${__dirname}/user-store.json`)
+    let auth = require('@koopjs/auth-direct-file')('pass-in-your-secret', `${__dirname}/user-store.json`)
     koop.register(auth)
 
 Then require and register your providers.  
