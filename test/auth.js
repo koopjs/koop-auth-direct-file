@@ -54,11 +54,29 @@ test('authenticate failure', async function (t) {
 })
 
 test('authenticationSpecifiction', t => {
-  t.plan(2)
+  t.plan(3)
   let authenticationSpecification = auth.getAuthenticationSpecification(providerMock.name)
   let result = authenticationSpecification()
   t.equals(result.secured, true)
   t.equals(result.provider, providerMock.name)
+  t.equals(result.ssl, true)
+})
+
+test('ssl - option setting', t => {
+  t.plan(3)
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {ssl: false})
+  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
+  let result = authenticationSpecification()
+  t.equals(result.secured, true)
+  t.equals(result.provider, providerMock.name)
+  t.equals(result.ssl, false)
+})
+
+test('ssl - invalid setting', t => {
+  t.plan(1)
+  t.throws(function () {
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {ssl: 'false'})
+  }, /"ssl" option must be a boolean/)
 })
 
 test('tokenExpirationMinutes - invalid setting', t => {
