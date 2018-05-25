@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/koopjs/koop-auth-direct#readme",
   "dependencies": {
-    "jsonwebtoken": "^8.2.1"
+    "jsonwebtoken": "^8.2.1",
+    "lodash": "^4.17.10"
   }
 }

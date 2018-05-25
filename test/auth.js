@@ -63,7 +63,7 @@ test('authenticationSpecifiction', t => {
 
 test('authSpecOptions', t => {
   t.plan(3)
-  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {ssl: false}})
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {ssl: false}})
   let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
   let result = authenticationSpecification()
   t.equals(result.secured, true)
@@ -78,16 +78,16 @@ test('tokenExpirationMinutes - invalid "tokenExpirationMinutes" setting', t => {
   }, /"tokenExpirationMinutes" must be an integer >= 5/)
 })
 
-test('tokenExpirationMinutes - invalid "authSpecOptions.provider" setting', t => {
+test('tokenExpirationMinutes - invalid "authSpecExtension.provider" setting', t => {
   t.plan(1)
   t.throws(function () {
-    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {provider: 'test'}})
-  }, /"provider" not allow as an authSpecOption key/)
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {provider: 'test'}})
+  }, /"provider" not allow as an authSpecExtension key/)
 })
 
-test('tokenExpirationMinutes - invalid "authSpecOptions.secured" setting', t => {
+test('tokenExpirationMinutes - invalid "authSpecExtension.secured" setting', t => {
   t.plan(1)
   t.throws(function () {
-    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecOptions: {secured: 'test'}})
-  }, /"secured" not allow as an authSpecOption key/)
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {secured: 'test'}})
+  }, /"secured" not allow as an authSpecExtension key/)
 })

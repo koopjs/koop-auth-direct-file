@@ -4,7 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 ## Added
-* new option `authSpecOptions`.  This will get added verbatim to the result of authenticationSpecification function
+* new option `authSpecExtension`. Must be an object. This will get added verbatim to the result of authenticationSpecification function
 
 ## [1.0.0] - 2018-05-22
 

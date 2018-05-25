@@ -1,8 +1,9 @@
 const fs = require('fs')
 const jwt = require('jsonwebtoken')
+const _ = require('lodash')
 const validateCredentials = require('./validate-credentials')
 const TOKEN_EXPIRATION_MINUTES = 60
-let _authSpecOptions
+let _authSpecExtension
 let _tokenExpirationMinutes
 let _secret
 let _userStoreFilePath
@@ -13,7 +14,7 @@ let _userStoreFilePath
  * @param {string}   userStoreFilePath - file path of user store JSON file
  * @param {object}   options
  * @param {integer}  options.tokenExpirationMinutes - number of minutes until token expires
- * @param {boolean}  options.authSpecOptions - additional options to be passed back in result of authenticationSpecification()
+ * @param {boolean}  options.authSpecExtension - additional options to be passed back in result of authenticationSpecification()
  */
 function auth (secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
@@ -23,11 +24,12 @@ function auth (secret, userStoreFilePath, options = {}) {
 
   _secret = secret
   _userStoreFilePath = userStoreFilePath
-  if (options.authSpecOptions) {
-    if (options.authSpecOptions.hasOwnProperty('provider')) throw new Error(`"provider" not allow as an authSpecOption key`)
-    if (options.authSpecOptions.hasOwnProperty('secured')) throw new Error(`"secured" not allow as an authSpecOption key`)
+  if (options.authSpecExtension) {
+    if (!_.isPlainObject(options.authSpecExtension)) throw new Error(`"authSpecExtension" must be a plain object`)
+    if (options.authSpecExtension.hasOwnProperty('provider')) throw new Error(`"provider" not allow as an authSpecExtension key`)
+    if (options.authSpecExtension.hasOwnProperty('secured')) throw new Error(`"secured" not allow as an authSpecExtension key`)
   }
-  _authSpecOptions = options.authSpecOptions || {}
+  _authSpecExtension = options.authSpecExtension || {}
 
   //  Ensure token expiration is an integer greater than 5
   if (options.tokenExpirationMinutes && (!Number.isInteger(options.tokenExpirationMinutes) || options.tokenExpirationMinutes < 5)) throw new Error(`"tokenExpirationMinutes" must be an integer >= 5`)
@@ -48,7 +50,7 @@ function auth (secret, userStoreFilePath, options = {}) {
  */
 function getAuthenticationSpecification (providerNamespace) {
   return function authenticationSpecification () {
-    return Object.assign(_authSpecOptions, {
+    return Object.assign(_authSpecExtension, {
       provider: providerNamespace,
       secured: true
     })
