@@ -61,14 +61,24 @@ test('authenticationSpecifiction', t => {
   t.equals(result.provider, providerMock.name)
 })
 
-test('authSpecOptions', t => {
+test('authSpecOptions - useHttp: true', t => {
   t.plan(3)
-  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {ssl: false}})
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: true})
   let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
   let result = authenticationSpecification()
   t.equals(result.secured, true)
   t.equals(result.provider, providerMock.name)
-  t.equals(result.ssl, false)
+  t.equals(result.useHttp, true)
+})
+
+test('authSpecOptions - useHttp: false', t => {
+  t.plan(3)
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: false})
+  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
+  let result = authenticationSpecification()
+  t.equals(result.secured, true)
+  t.equals(result.provider, providerMock.name)
+  t.equals(result.useHttp, false)
 })
 
 test('tokenExpirationMinutes - invalid "tokenExpirationMinutes" setting', t => {
@@ -78,16 +88,9 @@ test('tokenExpirationMinutes - invalid "tokenExpirationMinutes" setting', t => {
   }, /"tokenExpirationMinutes" must be an integer >= 5/)
 })
 
-test('tokenExpirationMinutes - invalid "authSpecExtension.provider" setting', t => {
+test('tokenExpirationMinutes - invalid "useHttp" setting', t => {
   t.plan(1)
   t.throws(function () {
-    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {provider: 'test'}})
-  }, /"provider" not allow as an authSpecExtension key/)
-})
-
-test('tokenExpirationMinutes - invalid "authSpecExtension.secured" setting', t => {
-  t.plan(1)
-  t.throws(function () {
-    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {authSpecExtension: {secured: 'test'}})
-  }, /"secured" not allow as an authSpecExtension key/)
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: 'string-value'})
+  }, /"useHttp" must be a boolean/)
 })

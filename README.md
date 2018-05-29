@@ -38,26 +38,12 @@ Finally, create a JSON file store.  This should be an array of objects with prop
 | userStoreFilePath | <code>string</code> | path to the JSON file containing the array of username/password objects |
 | options | <code>object</code> | options object |
 | options.tokenExpirationMinutes | <code>integer</code> | minutes until token expires (default 60) |
-| options.authSpecExtension | <code>object</code> | additional key-value data to return in result of authenticationSpecification function |
-
-## Extending the authentication-specification
-The method `authenticationSpecification` returns simple information to the caller.  By default, this includes the `name` of the provider that is calling the method and a simple boolean property, `secured`, indicating that authentication/authorization is currently applied to the provider. For certain implementations, it may be important to add additional properties to the result of `authenticationSpecification()` and you can do that by adding the option `authSpecExtension` when configuring the module.  Its value should be an object literal.  For example, this implementation:  
-
-    let auth = require('@koopjs/auth-direct-file')('pass-in-your-secret', `${__dirname}/user-store.json`, { authSpecExtention: { myNewProp: 'hello there' } })
-    koop.register(auth)
-
-would result in the following object being returned from `authenticationSpecification()`:  
-
-    {
-      name: 'my-provider',
-      secured: true,
-      myNewProp: 'hello there'
-    }
+| options.useHttp | <code>boolean</code> | pass the `useHttp` boolean flag as part of the authenticationSpecification function result|
 
 ## Special considerations for use with [koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices)
-[koop-ouput-geoservice](https://github.com/koopjs/koop-output-geoservices) geoservices assumes that token-services occur over HTTPS.  For development purposes you may wish to allow authentication to occur of HTTP.  This can be done by extending the `autheticationSpecification` result, as noted above, to include `ssl: false`:
+[koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices) assumes that token-services occur over HTTPS.  For development purposes you may wish to allow authentication to occur of HTTP.  This can be done two different ways.  You can add the `useHttp` option when configuring the module, which will be passed on in the result of `autheticationSpecification()` calls.
 
-    let auth = require('@koopjs/auth-direct-file')('pass-in-your-secret', `${__dirname}/user-store.json`, { authSpecExtention: { ssl: false } })
+    let auth = require('@koopjs/auth-direct-file')('pass-in-your-secret', `${__dirname}/user-store.json`, { useHttp: true })
     koop.register(auth)
 
-This addition will inform [koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices) to use `http` as the protocol for its definition of the `tokenServicesUrl`.
+Alternatively, you can set an environment variable `KOOP_AUTH_HTTP=true`.  Either of these approaches inform [koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices) to use `http` as the protocol of the `tokenServicesUrl`.

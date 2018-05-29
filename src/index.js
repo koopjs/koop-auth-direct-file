@@ -1,9 +1,8 @@
 const fs = require('fs')
 const jwt = require('jsonwebtoken')
-const _ = require('lodash')
 const validateCredentials = require('./validate-credentials')
 const TOKEN_EXPIRATION_MINUTES = 60
-let _authSpecExtension
+let _useHttp
 let _tokenExpirationMinutes
 let _secret
 let _userStoreFilePath
@@ -14,7 +13,7 @@ let _userStoreFilePath
  * @param {string}   userStoreFilePath - file path of user store JSON file
  * @param {object}   options
  * @param {integer}  options.tokenExpirationMinutes - number of minutes until token expires
- * @param {boolean}  options.authSpecExtension - additional options to be passed back in result of authenticationSpecification()
+ * @param {boolean}  options.useHttp - direct consumers of authenticationSpecifcation to use HTTP instead of HTTPS
  */
 function auth (secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
@@ -24,12 +23,10 @@ function auth (secret, userStoreFilePath, options = {}) {
 
   _secret = secret
   _userStoreFilePath = userStoreFilePath
-  if (options.authSpecExtension) {
-    if (!_.isPlainObject(options.authSpecExtension)) throw new Error(`"authSpecExtension" must be a plain object`)
-    if (options.authSpecExtension.hasOwnProperty('provider')) throw new Error(`"provider" not allow as an authSpecExtension key`)
-    if (options.authSpecExtension.hasOwnProperty('secured')) throw new Error(`"secured" not allow as an authSpecExtension key`)
-  }
-  _authSpecExtension = options.authSpecExtension || {}
+
+  // Ensure the useHttp option is a boolean and default to false
+  if (options.useHttp && typeof options.useHttp !== 'boolean') throw new Error(`"useHttp" must be a boolean`)
+  _useHttp = options.useHttp || false
 
   //  Ensure token expiration is an integer greater than 5
   if (options.tokenExpirationMinutes && (!Number.isInteger(options.tokenExpirationMinutes) || options.tokenExpirationMinutes < 5)) throw new Error(`"tokenExpirationMinutes" must be an integer >= 5`)
@@ -50,9 +47,10 @@ function auth (secret, userStoreFilePath, options = {}) {
  */
 function getAuthenticationSpecification (providerNamespace) {
   return function authenticationSpecification () {
-    return Object.assign(_authSpecExtension, {
+    return Object.assign({
       provider: providerNamespace,
-      secured: true
+      secured: true,
+      useHttp: _useHttp
     })
   }
 }
