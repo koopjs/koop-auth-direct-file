@@ -41,7 +41,7 @@ Finally, create a JSON file store.  This should be an array of objects with prop
 | options.useHttp | <code>boolean</code> | pass the `useHttp` boolean flag as part of the authenticationSpecification function result|
 
 ## Special considerations for use with [koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices)
-[koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices) assumes that token-services occur over HTTPS.  For development purposes you may wish to allow authentication to occur of HTTP.  This can be done two different ways.  You can add the `useHttp` option when configuring the module, which will be passed on in the result of `autheticationSpecification()` calls.
+[koop-ouput-geoservices](https://github.com/koopjs/koop-output-geoservices) assumes that token-services occur over HTTPS.  For development purposes you may wish to allow authentication to occur of HTTP.  This can be done two different ways.  You can add the `useHttp` option when configuring the module, which will be passed on in the result of `authenticationSpecification()` calls.
 
     let auth = require('@koopjs/auth-direct-file')('pass-in-your-secret', `${__dirname}/user-store.json`, { useHttp: true })
     koop.register(auth)
