@@ -1,7 +1,8 @@
 const fs = require('fs')
 const jwt = require('jsonwebtoken')
 const validateCredentials = require('./validate-credentials')
-const TOKEN_EXPIRATION_MINTUES = 60
+const TOKEN_EXPIRATION_MINUTES = 60
+let _useHttp
 let _tokenExpirationMinutes
 let _secret
 let _userStoreFilePath
@@ -12,6 +13,7 @@ let _userStoreFilePath
  * @param {string}   userStoreFilePath - file path of user store JSON file
  * @param {object}   options
  * @param {integer}  options.tokenExpirationMinutes - number of minutes until token expires
+ * @param {boolean}  options.useHttp - direct consumers of authenticationSpecifcation to use HTTP instead of HTTPS
  */
 function auth (secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
@@ -21,10 +23,15 @@ function auth (secret, userStoreFilePath, options = {}) {
 
   _secret = secret
   _userStoreFilePath = userStoreFilePath
-  _tokenExpirationMinutes = options.tokenExpirationMinutes || TOKEN_EXPIRATION_MINTUES
+
+  // Ensure the useHttp option is a boolean and default to false
+  if (options.useHttp && typeof options.useHttp !== 'boolean') throw new Error(`"useHttp" must be a boolean`)
+  _useHttp = options.useHttp || false
 
   //  Ensure token expiration is an integer greater than 5
-  if (!Number.isInteger(_tokenExpirationMinutes) || _tokenExpirationMinutes < 5) throw new Error(`"tokenExpirationMinutes" must be an integer >= 5`)
+  if (options.tokenExpirationMinutes && (!Number.isInteger(options.tokenExpirationMinutes) || options.tokenExpirationMinutes < 5)) throw new Error(`"tokenExpirationMinutes" must be an integer >= 5`)
+
+  _tokenExpirationMinutes = options.tokenExpirationMinutes || TOKEN_EXPIRATION_MINUTES
 
   return {
     type: 'auth',
@@ -40,10 +47,11 @@ function auth (secret, userStoreFilePath, options = {}) {
  */
 function getAuthenticationSpecification (providerNamespace) {
   return function authenticationSpecification () {
-    return {
+    return Object.assign({
       provider: providerNamespace,
-      secured: true
-    }
+      secured: true,
+      useHttp: _useHttp
+    })
   }
 }
 

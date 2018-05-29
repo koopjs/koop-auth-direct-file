@@ -61,9 +61,36 @@ test('authenticationSpecifiction', t => {
   t.equals(result.provider, providerMock.name)
 })
 
-test('tokenExpirationMinutes - invalid setting', t => {
+test('authSpecOptions - useHttp: true', t => {
+  t.plan(3)
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: true})
+  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
+  let result = authenticationSpecification()
+  t.equals(result.secured, true)
+  t.equals(result.provider, providerMock.name)
+  t.equals(result.useHttp, true)
+})
+
+test('authSpecOptions - useHttp: false', t => {
+  t.plan(3)
+  let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: false})
+  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
+  let result = authenticationSpecification()
+  t.equals(result.secured, true)
+  t.equals(result.provider, providerMock.name)
+  t.equals(result.useHttp, false)
+})
+
+test('tokenExpirationMinutes - invalid "tokenExpirationMinutes" setting', t => {
   t.plan(1)
   t.throws(function () {
     require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {tokenExpirationMinutes: -1})
   }, /"tokenExpirationMinutes" must be an integer >= 5/)
+})
+
+test('tokenExpirationMinutes - invalid "useHttp" setting', t => {
+  t.plan(1)
+  t.throws(function () {
+    require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: 'string-value'})
+  }, /"useHttp" must be a boolean/)
 })
