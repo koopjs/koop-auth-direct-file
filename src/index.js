@@ -43,7 +43,8 @@ function auth (secret, userStoreFilePath, options = {}) {
 
 /**
  * Parameterize a "authenticationSpecification" function with the name of a provider
- * @param {string} providerNamespace
+ * @param {string} providerNamespace a provider's namespace
+ * @returns {function}
  */
 function getAuthenticationSpecification (providerNamespace) {
   return function authenticationSpecification () {
@@ -57,8 +58,8 @@ function getAuthenticationSpecification (providerNamespace) {
 
 /**
  * Authenticate a user's submitted credentials
- * @param {string} username
- * @param {strting} password
+ * @param {string} username requester's username
+ * @param {strting} password requester's password
  * @returns {Promise}
  */
 function authenticate (username, password) {
@@ -70,8 +71,9 @@ function authenticate (username, password) {
         if (!valid) {
           let err = new Error('Invalid credentials.')
           err.code = 401
-          reject(err)// Create access token
+          reject(err)
         }
+        // Create access token and wrap in response object
         let expires = Date.now() + (_tokenExpirationMinutes * 60 * 1000)
         let json = {
           token: jwt.sign({exp: Math.floor(expires / 1000), sub: username}, _secret),
@@ -85,6 +87,11 @@ function authenticate (username, password) {
   })
 }
 
+/**
+ * Validate a token
+ * @param {string} token - token that can be used to prove previously successful authentication
+ * @returns {Promise}
+ */
 function authorize (token) {
   return new Promise((resolve, reject) => {
     // Verify token with async decoded function
@@ -94,6 +101,7 @@ function authorize (token) {
         err.code = 401
         reject(err)
       }
+      // Resolve the decoded token (an object)
       resolve(decoded)
     })
   })
