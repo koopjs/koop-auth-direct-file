@@ -1,6 +1,6 @@
 {
   "name": "@koopjs/auth-direct-file",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Module for implementing a direct authentication pattern with file-based user-store in Koop",
   "main": "dist/index.js",
   "scripts": {
