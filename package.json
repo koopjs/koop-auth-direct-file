@@ -28,5 +28,9 @@
   "homepage": "https://github.com/koopjs/koop-auth-direct-file#readme",
   "dependencies": {
     "jsonwebtoken": "^8.2.1"
+  },
+  "peerDependencies": {
+    "koop":"^3.7.0",
+    "koop-output-geoservices": "^1.5.1"
   }
 }
