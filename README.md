@@ -1,9 +1,9 @@
 # Koop-Auth-Direct-File
 ## A authentication module for implementing direct authentication from client to Koop server with a file-based user-store
 
-[![npm][npm-image]][npm-url]
-[![travis][travis-image]][travis-url]
-[![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+[![npm][npm-image]][npm-url]  
+[![travis][travis-image]][travis-url]  
+[![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]  
 
 ## Authentication pattern
 
@@ -51,3 +51,10 @@ Finally, create a JSON file store.  This should be an array of objects with prop
     koop.register(auth)
 
 Alternatively, you can set an environment variable `KOOP_AUTH_HTTP=true`.  Either of these approaches inform [koop-output-geoservices](https://github.com/koopjs/koop-output-geoservices) to use `http` as the protocol of the `tokenServicesUrl`.
+
+[npm-image]: https://img.shields.io/npm/v/@koopjs/auth-direct-file.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/@koopjs/auth-direct-file
+[travis-image]: https://travis-ci.org/koopjs/koop-auth-direct-file.svg?style=flat-square
+[travis-url]: https://travis-ci.org/koopjs/koop-auth-direct-file
+[greenkeeper-image]: https://badges.greenkeeper.io/koopjs/koop-auth-direct-file.svg
+[greenkeeper-url]: https://greenkeeper.io/
