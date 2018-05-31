@@ -52,6 +52,9 @@ Finally, create a JSON file store.  This should be an array of objects with prop
 
 Alternatively, you can set an environment variable `KOOP_AUTH_HTTP=true`.  Either of these approaches inform [koop-output-geoservices](https://github.com/koopjs/koop-output-geoservices) to use `http` as the protocol of the `tokenServicesUrl`.
 
+## Notes on use with ArcGIS Online and ArcGIS Portal  
+This authorization plugin has been tested with ArcGIS Online and ArcGIS Portal.  For versions of Portal earlier than 10.6, you may need to [import the root of your certificate into Portal's trust store](http://enterprise.arcgis.com/en/portal/10.5/administer/linux/import-a-certificate-into-the-portal.htm). We have observed the inability to store credentials for a secured Koop service on Portal instances that have not yet imported the root SSL certificate (of the Koop instance) into the trust-store.
+
 [npm-image]: https://img.shields.io/npm/v/@koopjs/auth-direct-file.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/@koopjs/auth-direct-file
 [travis-image]: https://travis-ci.org/koopjs/koop-auth-direct-file.svg?style=flat-square
