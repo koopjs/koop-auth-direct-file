@@ -1,6 +1,10 @@
 # Koop-Auth-Direct-File
 ## A authentication module for implementing direct authentication from client to Koop server with a file-based user-store
 
+[![npm][npm-image]][npm-url]
+[![travis][travis-image]][travis-url]
+[![Greenkeeper badge][greenkeeper-image]][greenkeeper-url]
+
 ## Authentication pattern
 
 The authentication module implemented here uses a *direct authentication* pattern; it receives user credentials (username/password) from a client and authenticates those credentials against an identity/user-store. Requests with valid credentials are issued an access-token (a string of encoded-data); The access token is encoded with the use of a secret known only to the Koop server. The access-token expires and becomes invalid after a certain period (default of 60 minutes).
