@@ -35,24 +35,19 @@ function auth (secret, userStoreFilePath, options = {}) {
 
   return {
     type: 'auth',
-    getAuthenticationSpecification,
+    authenticationSpecification,
     authenticate,
     authorize
   }
 }
 
 /**
- * Parameterize a "authenticationSpecification" function with the name of a provider
- * @param {string} providerNamespace a provider's namespace
- * @returns {function}
+ * Return "authenticationSpecification" object for use in output-services
+ * @returns {object}
  */
-function getAuthenticationSpecification (providerNamespace) {
-  return function authenticationSpecification () {
-    return Object.assign({
-      provider: providerNamespace,
-      secured: true,
-      useHttp: _useHttp
-    })
+function authenticationSpecification () {
+  return {
+    useHttp: _useHttp
   }
 }
 
