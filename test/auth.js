@@ -54,30 +54,22 @@ test('authenticate failure', async function (t) {
 })
 
 test('authenticationSpecifiction', t => {
-  t.plan(2)
-  let authenticationSpecification = auth.getAuthenticationSpecification(providerMock.name)
-  let result = authenticationSpecification()
-  t.equals(result.secured, true)
-  t.equals(result.provider, providerMock.name)
+  t.plan(1)
+  let result = auth.authenticationSpecification()
+  t.equals(result.useHttp, false)
 })
 
 test('authSpecOptions - useHttp: true', t => {
-  t.plan(3)
+  t.plan(1)
   let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: true})
-  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
-  let result = authenticationSpecification()
-  t.equals(result.secured, true)
-  t.equals(result.provider, providerMock.name)
+  let result = optionAuth.authenticationSpecification()
   t.equals(result.useHttp, true)
 })
 
 test('authSpecOptions - useHttp: false', t => {
-  t.plan(3)
+  t.plan(1)
   let optionAuth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'), {useHttp: false})
-  let authenticationSpecification = optionAuth.getAuthenticationSpecification(providerMock.name)
-  let result = authenticationSpecification()
-  t.equals(result.secured, true)
-  t.equals(result.provider, providerMock.name)
+  let result = optionAuth.authenticationSpecification()
   t.equals(result.useHttp, false)
 })
 
