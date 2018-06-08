@@ -1,6 +1,6 @@
 {
   "name": "@koopjs/auth-direct-file",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Module for implementing a direct authentication pattern with file-based user-store in Koop",
   "main": "dist/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
     "jsonwebtoken": "^8.2.1"
   },
   "peerDependencies": {
-    "koop":"^3.7.0",
-    "koop-output-geoservices": "^1.5.1"
+    "koop":"^3.7.2",
+    "koop-output-geoservices": "^1.5.2"
   }
 }
