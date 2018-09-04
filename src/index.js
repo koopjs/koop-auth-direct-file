@@ -53,12 +53,16 @@ function authenticationSpecification () {
 
 /**
  * Authenticate a user's submitted credentials
- * @param {string} username requester's username
- * @param {strting} password requester's password
+ * @param {object} req Express request object
  * @returns {Promise}
  */
-function authenticate (username, password) {
+function authenticate (req) {
   return new Promise((resolve, reject) => {
+    let username
+    let password
+    if (req && req.query && req.query.username) username = req.query.username
+    if (req && req.query && req.query.password) password = req.query.password
+
     // Validate user's credentials
     validateCredentials(username, password, _userStoreFilePath)
       .then(valid => {
@@ -84,11 +88,20 @@ function authenticate (username, password) {
 
 /**
  * Validate a token
- * @param {string} token - token that can be used to prove previously successful authentication
+ * @param {object} req Express request object
  * @returns {Promise}
  */
-function authorize (token) {
+function authorize (req) {
   return new Promise((resolve, reject) => {
+    // Make sure there is token
+    let token
+    if (req && req.query && req.query.token) token = req.query.token
+    if (req && req.headers && req.headers.authorization) token = req.headers['authorization']
+    if (!token) {
+      let err = new Error('No authorization token.')
+      err.code = 401
+      reject(err)
+    }
     // Verify token with async decoded function
     jwt.verify(token, _secret, function (err, decoded) {
       // If token invalid, reject

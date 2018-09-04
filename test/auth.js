@@ -8,11 +8,19 @@ const providerMock = {
 const secret = 'secret'
 const auth = require('../src')(secret, path.join(__dirname, '/fixtures/user-store.json'))
 
-test('authorize success', async function (t) {
+test('authorize success with token as query parameter', async function (t) {
   t.plan(1)
   // Mock token
   const token = jwt.sign({exp: Math.floor(Date.now() / 1000) + 120, iss: providerMock.name, sub: 'username'}, secret)
-  let decoded = await auth.authorize(token)
+  let decoded = await auth.authorize({ query: { token } })
+  t.equals(decoded.iss, providerMock.name)
+})
+
+test('authorize success with token as authorization header', async function (t) {
+  t.plan(1)
+  // Mock token
+  const token = jwt.sign({exp: Math.floor(Date.now() / 1000) + 120, iss: providerMock.name, sub: 'username'}, secret)
+  let decoded = await auth.authorize({ headers: { authorization: token } })
   t.equals(decoded.iss, providerMock.name)
 })
 
@@ -30,7 +38,7 @@ test('authorize failure - expired token', async function (t) {
   // Mock token
   const token = jwt.sign({exp: Math.floor(Date.now() / 1000) - 120, iss: providerMock.name, sub: 'username'}, secret)
   try {
-    await auth.authorize(token)
+    await auth.authorize({ query: { token } })
   } catch (err) {
     t.equals(err.code, 401)
   }
@@ -38,15 +46,35 @@ test('authorize failure - expired token', async function (t) {
 
 test('authenticate success', async function (t) {
   t.plan(2)
-  let result = await auth.authenticate('jerry', 'garcia')
+  let result = await auth.authenticate({ query: { username: 'jerry', password: 'garcia' } })
   t.equals(typeof result.token, 'string')
   t.equals(typeof result.expires, 'number')
+})
+
+test('authenticate failure - missing username', async function (t) {
+  t.plan(2)
+  try {
+    await auth.authenticate({ query: { password: 'garcia' } })
+  } catch (err) {
+    t.equals(err.code, 401)
+    t.equals(err.message, 'Invalid credentials.')
+  }
+})
+
+test('authenticate failure - missing password', async function (t) {
+  t.plan(2)
+  try {
+    await auth.authenticate({ query: { username: 'jerry' } })
+  } catch (err) {
+    t.equals(err.code, 401)
+    t.equals(err.message, 'Invalid credentials.')
+  }
 })
 
 test('authenticate failure', async function (t) {
   t.plan(2)
   try {
-    await auth.authenticate('lou', 'reed')
+    await auth.authenticate({ query: { username: 'lou', password: 'reed' } })
   } catch (err) {
     t.equals(err.code, 401)
     t.equals(err.message, 'Invalid credentials.')
