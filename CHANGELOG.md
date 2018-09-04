@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## Unreleased
+## 2.0.0
 ### Changed
 * `authorize` function argument is now the full Express request object
 * Authorization token may be delivered by query parameter `token` or the `authorization` header
@@ -26,6 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 * Initial release of an authentication plugin for Koop that leverages a file-based user-store.
 
+[2.0.0]: https://github.com/koopjs/koop-auth-direct-file/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/koopjs/koop-auth-direct-file/compare/v1.1.0...v1.2.0
 [1.1.1]: https://github.com/koopjs/koop-auth-direct-file/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/koopjs/koop-auth-direct-file/compare/v1.0.0...v1.1.0
