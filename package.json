@@ -31,6 +31,6 @@
   },
   "peerDependencies": {
     "koop":"^3.7.2",
-    "koop-output-geoservices": "^1.5.2"
+    "koop-output-geoservices": "^2.0.0"
   }
 }

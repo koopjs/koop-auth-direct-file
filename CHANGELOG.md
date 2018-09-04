@@ -2,8 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* `authorize` function argument is now the full Express request object
+* Authorization token may be delivered by query parameter `token` or the `authorization` header
+* `authenticate` function argument is now the full Express request object
+* `authenticate` function rejects if username or password are missing
+* Update koop-output-geoservices peer dependency to 2.0.0
+
 ## [1.2.0] - 2018-06-08
-#### Added
+### Added
 * replaced `getAuthenticationSpecification` with `authenticationSpecification`
 
 ## [1.1.1] - 2018-05-31
