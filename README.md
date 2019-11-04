@@ -78,7 +78,7 @@ cd demo-app
 koop add provider @koopjs/auth-direct-file
 
 # Create a file with all valid credentials
-echo \[\\n\\t{ \"username\": \"rich\", \"password\": \"rich\" }\\n\] > src/user-store.json
+echo \[\\n\\t{ \"username\": \"admin\", \"password\": \"admin\" }\\n\] > src/user-store.json
 
 # Open src/plugins.js and replace:
 # This line: const authDirectFile = require('@koopjs/auth-direct-file')
