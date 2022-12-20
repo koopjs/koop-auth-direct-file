@@ -61,3 +61,43 @@ This authorization plugin has been tested with ArcGIS Online and ArcGIS Portal. 
 [travis-url]: https://travis-ci.org/koopjs/koop-auth-direct-file
 [greenkeeper-image]: https://badges.greenkeeper.io/koopjs/koop-auth-direct-file.svg
 [greenkeeper-url]: https://greenkeeper.io/
+
+## How to setup an app: Step by step guide
+
+On this guide we will show you how to setup a new app with a secured provider. We will be using [Koop-CLI](https://github.com/koopjs/koop-cli).
+
+```
+# Install Koop-CLI if needed
+npm install -g @koopjs/cli
+
+# Create a new Koop app
+koop new app demo-app
+cd demo-app
+
+# Add this Auth plugin
+koop add provider @koopjs/auth-direct-file
+
+# Create a file with all valid credentials
+echo \[\\n\\t{ \"username\": \"admin\", \"password\": \"admin\" }\\n\] > src/user-store.json
+
+# Open src/plugins.js and replace:
+# This line: const authDirectFile = require('@koopjs/auth-direct-file')
+# For this line: const authDirectFile = require('@koopjs/auth-direct-file')('123456', `${__dirname}/user-store.json`, { useHttp: true });
+
+# Install any provider
+koop add provider koop-provider-carto
+
+# Run the koop server
+koop serve
+
+# Try to access server (it will fail <- require an access token)
+http://localhost:8080/koop-provider-carto/rest/services/common-data/twitter_t3chfest_reduced/FeatureServer/0
+
+# Generate token using any of the credentials you placed at src/user-store.json
+http://localhost:8080/koop-provider-carto/tokens?username=rich&password=rich
+
+# Now retry to access service but adding the generated token
+http://localhost:8080/koop-provider-carto/rest/services/common-data/twitter_t3chfest_reduced/FeatureServer/0?token=GENERATED_TOKEN
+
+# That's it! you are done!
+```
