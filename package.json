@@ -18,7 +18,7 @@
   "devDependencies": {
     "buble": "^0.19.3",
     "proxyquire": "^2.0.1",
-    "standard": "^11.0.1",
+    "standard": "^17.0.0",
     "tap-spec": "^4.1.1",
     "tape": "^4.6.3"
   },
