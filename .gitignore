@@ -10,3 +10,4 @@ test/test.log.**
 .idea
 dist
 **/user-store.json
+coverage

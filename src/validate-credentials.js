@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs-extra');
 
 /**
  * Validate username and password.
@@ -7,24 +7,21 @@ const fs = require('fs')
  * @param {string} userStoreFilePath path to user-store file
  * @returns {Promise}
  */
-function validateFileBasedCredentials (username, password, userStoreFilePath) {
-  const promise = new Promise((resolve, reject) => {
-    fs.readFile(userStoreFilePath, function (err, dataBuffer) {
-      if (err) return reject(err)
+async function validateCredentials(username, password, userStoreFilePath) {
+  try {
+    const dataBuffer = await fs.readFile(userStoreFilePath);
+    const userStore = JSON.parse(dataBuffer.toString());
 
-      let userStore = JSON.parse(dataBuffer.toString())
-
-      const user = userStore.find(user => {
-        return user.username === username
-      })
-
-      if (!user || user.password !== password) {
-        resolve(false)
-      }
-      resolve(true)
-    })
-  })
-  return promise
+    const user = userStore.find((user) => {
+      return user.username === username;
+    });
+  
+    return user?.password === password;
+  } catch (err) {
+    throw new Error('Auth plugin: error reading auth store');
+  }
 }
 
-module.exports = validateFileBasedCredentials
+module.exports = {
+  validateCredentials,
+};

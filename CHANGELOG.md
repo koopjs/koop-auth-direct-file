@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+* migrate to jest
+
 ## 2.0.0
 ### Changed
 * `authorize` function argument is now the full Express request object
