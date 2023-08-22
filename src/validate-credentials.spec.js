@@ -7,12 +7,34 @@ describe('validate credentials', () => {
   test('should validate', async () => {
     fs.readFile.mockImplementationOnce(() => {
       return Buffer.from(JSON.stringify([
-        { username: 'foo', 'password': 'bar' }
+        { username: 'foo', password: 'bar' }
       ]));
     });
 
     const result = await validateCredentials('foo', 'bar');
     expect(result).toEqual(true);
+  });
+
+  test('should invalidate if user not found', async () => {
+    fs.readFile.mockImplementationOnce(() => {
+      return Buffer.from(JSON.stringify([
+        { username: 'fooz', password: 'bar' }
+      ]));
+    });
+
+    const result = await validateCredentials('foo', 'bar');
+    expect(result).toEqual(false);
+  });
+
+  test('should invalidate if password does not match', async () => {
+    fs.readFile.mockImplementationOnce(() => {
+      return Buffer.from(JSON.stringify([
+        { username: 'foo', password: 'baz' }
+      ]));
+    });
+
+    const result = await validateCredentials('foo', 'bar');
+    expect(result).toEqual(false);
   });
 
   test('should throw error reading store', async () => {

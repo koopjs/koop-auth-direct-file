@@ -16,6 +16,10 @@ async function validateCredentials(username, password, userStoreFilePath) {
       return user.username === username;
     });
   
+    if (!user) {
+      return false;
+    }
+    
     return user?.password === password;
   } catch (err) {
     throw new Error('Auth plugin: error reading auth store');
