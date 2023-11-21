@@ -73,7 +73,7 @@ describe('Auth Plugin', () => {
       }
     });
 
-    test('should validate and send jwt', async () => {
+    test('should validate creds from query and send jwt', async () => {
       helpers.validateCredentials.mockImplementationOnce(() => {
         return true;
       });
@@ -89,6 +89,27 @@ describe('Auth Plugin', () => {
       );
 
       const result = await authPlugin.authenticate({ query: { username: 'foo', password: 'bar' } });
+
+      expect(result.token).toEqual('abc');
+      expect(result.expires).toBeGreaterThan(Date.now());
+    });
+
+    test('should validate creds from body and send jwt', async () => {
+      helpers.validateCredentials.mockImplementationOnce(() => {
+        return true;
+      });
+
+      jwt.sign.mockImplementationOnce(() => {
+        return 'abc';
+      });
+
+      const authPlugin = require('./index.js')(
+        secret,
+        path.join(__dirname, '../test/fixtures/user-store.json'),
+        { useHttp: true }
+      );
+
+      const result = await authPlugin.authenticate({ body: { username: 'foo', password: 'bar' } });
 
       expect(result.token).toEqual('abc');
       expect(result.expires).toBeGreaterThan(Date.now());
