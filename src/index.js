@@ -6,7 +6,6 @@ const errorPrefix = 'Auth plugin: ';
 const TOKEN_EXPIRATION_MINUTES = 60;
 
 const optionsSchema = joi.object({
-  useHttp: joi.boolean().default(false),
   tokenExpirationMinutes: joi
     .number()
     .integer()
@@ -14,7 +13,6 @@ const optionsSchema = joi.object({
     .default(TOKEN_EXPIRATION_MINUTES),
 });
 
-let _useHttp;
 let _tokenExpirationMinutes;
 let _secret;
 let _userStoreFilePath;
@@ -25,7 +23,6 @@ let _userStoreFilePath;
  * @param {string}   userStoreFilePath - file path of user store JSON file
  * @param {object}   options
  * @param {integer}  options.tokenExpirationMinutes - number of minutes until token expires
- * @param {boolean}  options.useHttp - direct consumers of authenticationSpecifcation to use HTTP instead of HTTPS
  */
 function initAuthPlugin(secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
@@ -38,33 +35,22 @@ function initAuthPlugin(secret, userStoreFilePath, options = {}) {
 
   const {
     error,
-    value: { tokenExpirationMinutes, useHttp },
+    value: { tokenExpirationMinutes },
   } = optionsSchema.validate(options);
 
   if (error) {
     throw new Error(`${errorPrefix}${error.details[0].message}`);
   }
 
-  _useHttp = useHttp;
   _tokenExpirationMinutes = tokenExpirationMinutes;
 
   return {
     type: 'auth',
-    authenticationSpecification,
     authenticate,
     authorize,
   };
 }
 
-/**
- * Return "authenticationSpecification" object for use in output-services
- * @returns {object}
- */
-function authenticationSpecification() {
-  return {
-    useHttp: _useHttp,
-  };
-}
 
 /**
  * Authenticate a user's submitted credentials
@@ -72,9 +58,17 @@ function authenticationSpecification() {
  * @returns {Promise}
  */
 async function authenticate(req) {
+  const expires = Date.now() + _tokenExpirationMinutes * 60 * 1000;
   const { query = {}, body = {} } = req;
-  const { username, password } = {...query, ...body};
+  const { username, password, token } = { ...query, ...body };
 
+  if (token) {
+    const { sub } = decodeToken(token);
+    return {
+      token: createToken(sub, expires),
+      expires,
+    };
+  }
 
   // Validate user's credentials
   const valid = await validateCredentials(
@@ -90,12 +84,9 @@ async function authenticate(req) {
   }
 
   // Create access token and wrap in response object
-  const expires = Date.now() + _tokenExpirationMinutes * 60 * 1000;
+  
   return {
-    token: jwt.sign(
-      { exp: Math.floor(expires / 1000), sub: username },
-      _secret,
-    ),
+    token: createToken(username, expires),
     expires,
   };
 }
@@ -114,6 +105,10 @@ async function authorize(req) {
     throw err;
   }
   // Verify token with async decoded function
+  return decodeToken(token);
+}
+
+async function decodeToken(token) {
   try {
     const decoded = await jwt.verify(token, _secret);
     return decoded;
@@ -121,6 +116,10 @@ async function authorize(req) {
     err.code = 401;
     throw err;
   }
+}
+
+function createToken(sub, expires) {
+  return jwt.sign({ exp: Math.floor(expires / 1000), sub }, _secret);
 }
 
 module.exports = initAuthPlugin;
