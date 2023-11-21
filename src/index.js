@@ -72,8 +72,9 @@ function authenticationSpecification() {
  * @returns {Promise}
  */
 async function authenticate(req) {
-  const username = req.query?.username;
-  const password = req.query?.password;
+  const { query, body } = req;
+  const { username, password } = {...query, ...body};
+
 
   // Validate user's credentials
   const valid = await validateCredentials(
