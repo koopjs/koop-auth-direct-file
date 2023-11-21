@@ -72,7 +72,7 @@ function authenticationSpecification() {
  * @returns {Promise}
  */
 async function authenticate(req) {
-  const { query, body } = req;
+  const { query = {}, body = {} } = req;
   const { username, password } = {...query, ...body};
 
 
