@@ -2,7 +2,6 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const joi = require('joi');
 const { validateCredentials } = require('./validate-credentials');
-const errorPrefix = 'Auth plugin: ';
 const TOKEN_EXPIRATION_MINUTES = 60;
 
 const optionsSchema = joi.object({
@@ -11,7 +10,7 @@ const optionsSchema = joi.object({
     .integer()
     .greater(4)
     .default(TOKEN_EXPIRATION_MINUTES),
-});
+}).unknown();
 
 let _tokenExpirationMinutes;
 let _secret;
@@ -28,7 +27,7 @@ function initAuthPlugin(secret, userStoreFilePath, options = {}) {
   // Throw error if user-store file does not exist
   const result = fs.existsSync(userStoreFilePath);
   if (!result) {
-    throw new Error(`${errorPrefix}${userStoreFilePath} not found`);
+    throw new Error(`${userStoreFilePath} not found`);
   }
   _secret = secret;
   _userStoreFilePath = userStoreFilePath;
@@ -39,7 +38,7 @@ function initAuthPlugin(secret, userStoreFilePath, options = {}) {
   } = optionsSchema.validate(options);
 
   if (error) {
-    throw new Error(`${errorPrefix}${error.details[0].message}`);
+    throw new Error(error.details[0].message);
   }
 
   _tokenExpirationMinutes = tokenExpirationMinutes;
@@ -48,6 +47,8 @@ function initAuthPlugin(secret, userStoreFilePath, options = {}) {
     type: 'auth',
     authenticate,
     authorize,
+    name: 'file-based-auth-store',
+    version: require('../package.json').version
   };
 }
 
@@ -97,7 +98,10 @@ async function authenticate(req) {
  * @returns {Promise}
  */
 async function authorize(req) {
-  let token = req.query?.token || req.headers['authorization'];
+  const { query = {}, body = {} } = req;
+  const headerToken = req.headers['authorization'] ?? req.headers['authorization'].replace(/^Bearer /, '');
+  const params = { ...query, ...body };
+  const token = headerToken || params.token;
 
   if (!token) {
     let err = new Error('No authorization token.');

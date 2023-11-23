@@ -27,7 +27,7 @@ describe('Auth Plugin', () => {
         fail('should have thrown');
       } catch (error) {
         expect(error.message).toMatch(
-          /^Auth plugin: .+userz-store.json not found$/,
+          /userz-store.json not found$/,
         );
       }
     });
