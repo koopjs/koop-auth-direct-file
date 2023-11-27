@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## Unreleased
+### Changed
+* eliminate authenticationSpecification method
+
+### Added
+* allow authenticate method to "refresh" a token
+* allow token to arrive on header, query, body
+
+### Fixed
+* strip 'Bearer ' string from any authorization header
+
 ## 2.0.3
 ### Fixed
 * username and password can arrive on query or body

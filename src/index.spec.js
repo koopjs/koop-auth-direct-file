@@ -26,33 +26,10 @@ describe('Auth Plugin', () => {
         );
         fail('should have thrown');
       } catch (error) {
-        expect(error.message).toMatch(/^Auth plugin: .+userz-store.json not found$/);
-      }
-    });
-
-    test('should fail to initialize due to invalid useHttp option', () => {
-      try {
-        require('./index.js')(
-          secret,
-          path.join(__dirname, '../test/fixtures/user-store.json'),
-          { useHttp: 'boo' }
+        expect(error.message).toMatch(
+          /userz-store.json not found$/,
         );
-        fail('should have thrown');
-      } catch (error) {
-        expect(error.message).toMatch('Auth plugin: "useHttp" must be a boolean');
       }
-    });
-  });
-
-  describe('authenticationSpecification', () => {
-    test('should return expected specification', () => {
-      const authPlugin = require('./index.js')(
-        secret,
-        path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
-      );
-      const spec = authPlugin.authenticationSpecification();
-      expect(spec.useHttp).toEqual(true);
     });
   });
 
@@ -61,11 +38,12 @@ describe('Auth Plugin', () => {
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
       try {
-        await authPlugin.authenticate({ query: { username: 'foo', password: 'bar' } });
+        await authPlugin.authenticate({
+          query: { username: 'foo', password: 'bar' },
+        });
         fail('should have thrown');
       } catch (error) {
         expect(error.message).toEqual('Invalid credentials.');
@@ -85,10 +63,11 @@ describe('Auth Plugin', () => {
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
-      const result = await authPlugin.authenticate({ query: { username: 'foo', password: 'bar' } });
+      const result = await authPlugin.authenticate({
+        query: { username: 'foo', password: 'bar' },
+      });
 
       expect(result.token).toEqual('abc');
       expect(result.expires).toBeGreaterThan(Date.now());
@@ -106,10 +85,11 @@ describe('Auth Plugin', () => {
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
-      const result = await authPlugin.authenticate({ body: { username: 'foo', password: 'bar' } });
+      const result = await authPlugin.authenticate({
+        body: { username: 'foo', password: 'bar' },
+      });
 
       expect(result.token).toEqual('abc');
       expect(result.expires).toBeGreaterThan(Date.now());
@@ -117,15 +97,14 @@ describe('Auth Plugin', () => {
   });
 
   describe('authorize', () => {
-    test('should fail to authorize due to missing token', async () => {      
+    test('should fail to authorize due to missing token', async () => {
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
       try {
-        await authPlugin.authorize({ query: { }, headers: [] });
+        await authPlugin.authorize({ query: {}, headers: [] });
         fail('should have thrown');
       } catch (error) {
         expect(error.message).toEqual('No authorization token.');
@@ -137,11 +116,10 @@ describe('Auth Plugin', () => {
       jwt.verify.mockImplementationOnce(() => {
         throw new Error('failed to verify token');
       });
-      
+
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
       try {
@@ -158,13 +136,18 @@ describe('Auth Plugin', () => {
         return 'abc';
       });
 
+      const expires = Date.now() + 5 * 60 * 1000;
+      const token = jwt.sign(
+        { exp: Math.floor(expires / 1000), sub: 'fezzik' },
+        secret,
+      );
+
       const authPlugin = require('./index.js')(
         secret,
         path.join(__dirname, '../test/fixtures/user-store.json'),
-        { useHttp: true }
       );
 
-      const result = await authPlugin.authorize({ query: { token: 'foo' } });
+      const result = await authPlugin.authorize({ query: { token } });
 
       expect(result).toEqual('abc');
     });
